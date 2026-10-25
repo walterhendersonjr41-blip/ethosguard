@@ -74,8 +74,60 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer}
 .flag-tag{display:inline-block;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;margin-right:4px;background:rgba(245,158,11,.15);color:#fcd34d;border:1px solid rgba(245,158,11,.35)}
 .flag-tag.bad{background:rgba(239,68,68,.15);color:#fca5a5;border-color:rgba(239,68,68,.35)}
 .flag-tag.ok{background:rgba(34,197,94,.15);color:#86efac;border-color:rgba(34,197,94,.35)}
+.empty{padding:26px 16px;text-align:center;color:var(--muted);font-size:14px;border:1px dashed var(--line);border-radius:12px;margin-top:8px}
+.hero h3{font-size:22px;color:var(--text);margin-bottom:10px}
+p.big{font-size:16px;line-height:1.5;margin-bottom:8px}
+.card p{line-height:1.5;font-size:14px}
+.btn{min-height:40px}
+.btn.big{font-size:15px;padding:12px 18px;min-height:48px;border-radius:10px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.danger{border-color:rgba(239,68,68,.5);color:#fca5a5}
+.file{display:inline-flex;align-items:center;cursor:pointer}
+.file input{position:absolute;width:1px;height:1px;opacity:0}
+.file span{display:inline-block;background:var(--panel2);border:1px dashed var(--accent);color:var(--text);padding:12px 18px;border-radius:10px;font-weight:700;font-size:14px;min-height:48px}
+.file:focus-within span{outline:2px solid var(--accent)}
+.form{display:flex;flex-direction:column;gap:12px}
+.form.grid{display:grid}
+.form label,.grid.form label{display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--muted);font-weight:600}
+input:not([type=checkbox]):not([type=file]):not([type=range]),select,textarea{background:#0f172a;border:1px solid var(--line);color:var(--text);border-radius:10px;padding:11px 12px;font:inherit;font-size:15px;width:100%;min-height:44px}
+textarea{resize:vertical}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);border-color:transparent}
+.row select{width:auto}
+fieldset{border:1px solid var(--line);border-radius:10px;padding:12px}
+legend{padding:0 6px;font-size:13px;color:var(--muted);font-weight:600}
+.checks{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+label.chk{flex-direction:row !important;align-items:center;gap:10px !important;font-weight:500 !important;color:var(--text) !important;font-size:14px !important;cursor:pointer;padding:6px 0}
+.chk input,.big-check{width:22px;height:22px;accent-color:var(--accent);flex:none;cursor:pointer}
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.sb{justify-content:space-between;margin-bottom:8px}
+.click{cursor:pointer}.card.click:hover{border-color:var(--accent)}
+tr:not(.click):hover td{cursor:default}
+a{color:#93b4ff}
+code{background:#0f172a;padding:1px 5px;border-radius:4px;font-size:12px}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(120px);background:var(--panel2);border:1px solid var(--accent);color:var(--text);padding:12px 18px;border-radius:12px;font-size:14px;z-index:100;transition:transform .25s;max-width:90vw}
+#toast.on{transform:translateX(-50%) translateY(0)}
+#menuBtn{display:none}
+.pill.click{cursor:pointer}.pill.click:hover{color:var(--text);border-color:var(--accent)}
+.disclaim{font-size:11px;color:var(--muted);padding:12px 22px;border-top:1px solid var(--line)}
+@media(max-width:800px){
+ body{display:block;height:auto;overflow:auto}
+ aside{position:fixed;inset:0 25% 0 0;z-index:60;transform:translateX(-105%);transition:transform .2s;box-shadow:0 0 40px #000}
+ body.nav-open aside{transform:none}
+ main{min-height:100vh}
+ header{height:auto;flex-wrap:wrap;gap:8px;padding:10px 12px;position:sticky;top:0;z-index:20}
+ header h2{font-size:17px;flex:1}
+ #menuBtn{display:inline-block}
+ .header-right{width:100%;flex-wrap:wrap;gap:6px}
+ .content{overflow:visible;padding:12px}
+ .g4,.g3,.g2,.checks{grid-template-columns:1fr}
+ .kv{grid-template-columns:1fr;gap:2px}
+ .modal-bg{padding:0;align-items:stretch}
+ .modal{max-height:100vh;height:100%;border-radius:0}
+ .nav-item{font-size:15px;padding:13px 12px}
+}
 </style>
 <link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#4f7cff"><link rel="apple-touch-icon" href="icons/icon-192.png"><link rel="icon" href="icons/icon-192.png">
+<meta name="description" content="Free responsible-AI governance workspace: AI system registry, bias and drift tests, privacy scanner, license checks and NIST AI RMF checklist. Runs in your browser.">
 </head>
 <body>
 <aside>
@@ -87,14 +139,17 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer}
     </div>
   </div>
   <nav id="nav"></nav>
+  <div class="disclaim">Your data stays in this browser. Guidance only, not legal advice.</div>
 </aside>
 <main>
   <header>
+    <button class="btn btn-ghost" id="menuBtn" aria-label="Open menu">☰ Menu</button>
     <h2 id="viewTitle">Overview</h2>
     <div class="header-right">
-      <span class="pill">Org: Henderson Concepts</span>
-      <span class="pill">Sample data · mid-market pilot</span>
-      <button class="btn btn-primary" onclick="genRecs()">Generate AI recommendations</button>
+      <button class="pill click" id="orgPill" title="Set your organization name">Org: set your org name</button>
+      <button class="btn btn-ghost" id="exportBtn" title="Download a backup of everything">⬇ Export backup</button>
+      <label class="btn btn-ghost file" title="Restore from a backup file" style="padding:0"><input type="file" id="importIn" accept=".json,application/json"><span style="border:0;background:none;padding:10px 12px;min-height:0;font-size:12px">⬆ Import</span></label>
+      <button class="btn btn-primary" id="recBtn">✨ AI recommendations</button>
     </div>
   </header>
   <div class="content">
@@ -113,595 +168,12 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer}
   </div>
 </main>
 
-<div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()">
-  <div class="modal" id="modal"></div>
+<div class="modal-bg" id="modalBg">
+  <div class="modal" id="modal" role="dialog" aria-modal="true"></div>
 </div>
-
-<script>
-const SECTIONS = [
-  ['dashboard','Overview'],
-  ['bias','Bias Testing'],
-  ['drift','Drift Telemetry'],
-  ['policies','Policy Suite'],
-  ['xai','XAI Matrix'],
-  ['audit','Audit Trails'],
-  ['privacy','Privacy Guard'],
-  ['safety','Safety Bounds'],
-  ['compliance','Compliance Map'],
-  ['provenance','Model Provenance'],
-  ['poisoning','Dataset Integrity'],
-  ['registry','Model Registry'],
-];
-
-const knobs = {
-  provenanceDepth: 72,
-  poisonSensitivity: 68,
-  nistAlignment: 74,
-  riskTolerance: 55,
-};
-
-const systems = [
-  {
-    id:'sys-loan',
-    name:'CreditScore Assist',
-    purpose:'Loan underwriting decision support',
-    owner:'Risk Ops · Maya Chen',
-    risk:'High',
-    data:['credit files','income','employment'],
-    users:'Loan applicants (US)',
-    review:'In review',
-    compliance:'Partial',
-    approvals:['Chief Risk','Legal','Ethics Board'],
-    audit:['2026-08-12 intake','2026-09-01 bias test'],
-    nextReview:'2026-10-01',
-    biasScore:72, privacyScore:81, oversight:'Human-in-the-loop required'
-  },
-  {
-    id:'sys-hr',
-    name:'HireMatch Ranker',
-    purpose:'Resume ranking for open roles',
-    owner:'People Tech · Jordan Lee',
-    risk:'Medium',
-    data:['resumes','job reqs'],
-    users:'Job applicants',
-    review:'Approved',
-    compliance:'Compliant',
-    approvals:['CHRO','Legal'],
-    audit:['2026-07-20 ethics pass','2026-08-30 fairness retest'],
-    nextReview:'2026-11-15',
-    biasScore:88, privacyScore:90, oversight:'Spot-check 10%/week'
-  },
-  {
-    id:'sys-cx',
-    name:'SupportPilot Chat',
-    purpose:'Customer support draft replies',
-    owner:'CX Platform · Sam Ortiz',
-    risk:'Low',
-    data:['tickets','KB articles'],
-    users:'Support agents',
-    review:'Approved',
-    compliance:'Compliant',
-    approvals:['CX Lead'],
-    audit:['2026-09-02 privacy review'],
-    nextReview:'2026-12-01',
-    biasScore:91, privacyScore:86, oversight:'Agent always sends'
-  },
-  {
-    id:'sys-fraud',
-    name:'FraudPulse Monitor',
-    purpose:'Realtime transaction anomaly flags',
-    owner:'Fraud · Aisha Rahman',
-    risk:'High',
-    data:['transactions','device signals'],
-    users:'Cardholders',
-    review:'Conditional',
-    compliance:'At risk',
-    approvals:['CISO','Compliance','Ethics Board'],
-    audit:['2026-09-05 incident F-104'],
-    nextReview:'2026-09-20',
-    biasScore:64, privacyScore:78, oversight:'Analyst confirm before block'
-  }
-];
-
-const policies = [
-  ['EG-01','Acceptable AI Use','Active','All staff'],
-  ['EG-02','High-Risk System Review','Active','Risk / Legal'],
-  ['EG-03','Bias Testing Standard','Active','Model owners'],
-  ['EG-04','Human Oversight Policy','Draft','Ops leads'],
-  ['EG-05','Incident Response for AI','Active','Security'],
-  ['EG-06','Data Minimization for Models','Active','Privacy'],
-];
-
-const incidents = [
-  ['F-104','FraudPulse false decline spike','Open','High','2026-09-05'],
-  ['H-091','HireMatch gender score drift','Mitigating','Medium','2026-08-28'],
-  ['C-077','SupportPilot leaked PII in draft','Closed','Low','2026-08-10'],
-];
-
-const packages = [
-  ['torch','2.3.1','BSD-3','Direct','Audited'],
-  ['transformers','4.44.0','Apache-2.0','Direct','Audited'],
-  ['numpy','1.26.4','BSD-3','Direct','Audited'],
-  ['scikit-learn','1.5.1','BSD-3','Direct','Audited'],
-  ['pandas','2.2.2','BSD-3','Transitive','Audited'],
-  ['requests','2.32.3','Apache-2.0','Transitive','Audited'],
-  ['gpl-utils-demo','0.9.1','GPL-3.0','Transitive','Copyleft flag'],
-  ['lgpl-codec','1.2.0','LGPL-2.1','Transitive','Copyleft flag'],
-  ['onnxruntime','1.18.1','MIT','Direct','Audited'],
-  ['cryptography','43.0.0','Apache-2.0 / BSD','Transitive','Audited'],
-];
-
-const poisonFlags = [
-  ['Token-injection pattern','Quarantined','High','Synthetic prompt tokens in credit cohort batch B-17'],
-  ['Coordinate poisoning (feature space)','Watch','Medium','Unusual density spike near decision boundary features'],
-  ['Label flip cluster','Quarantined','High','14 rows with inverted target vs peer cohort'],
-  ['Data drift safeguard','Active','Info','PSI 0.58 vs baseline — linked to Drift Telemetry'],
-  ['Outlier embedding island','Cleared','Low','Reviewed; legitimate rare-segment applicants'],
-];
-
-const nistChecks = [
-  ['Govern','Roles, policies, and escalation paths documented','Partial',70],
-  ['Map','Use-case context, stakeholders, and harm surface inventoried','Complete',88],
-  ['Measure','Bias, drift, privacy, and safety metrics collected','Partial',72],
-  ['Manage','Human-gated response, incidents, and continuous improvement','Partial',66],
-];
-
-function badge(status){
-  const s=(status||'').toLowerCase();
-  let cls='b-muted';
-  if(/compliant|approved|closed|active|pass|ok|low|audited|cleared|complete/.test(s)) cls='b-ok';
-  else if(/partial|conditional|medium|mitigat|draft|review|warn|watch|copyleft/.test(s)) cls='b-warn';
-  else if(/high|risk|open|fail|critical|quarantin/.test(s)) cls='b-bad';
-  else if(/info|new/.test(s)) cls='b-info';
-  return `<span class="badge ${cls}">${status}</span>`;
-}
-
-function meter(score, color){
-  return `<div class="meter"><span style="width:${Math.min(100,Math.max(0,score))}%;background:${color}"></span></div>`;
-}
-
-function healthScore(){
-  // Demo composite ~71 — influenced lightly by knobs for walkthrough feel
-  const base = 71;
-  const adj = Math.round((knobs.nistAlignment - 74) * 0.08 + (55 - knobs.riskTolerance) * 0.04);
-  return Math.max(55, Math.min(85, base + adj));
-}
-
-function healthLabel(score){
-  if(score >= 80) return 'Healthy';
-  if(score >= 65) return 'Review Recommended';
-  return 'Needs Audit';
-}
-
-function navRender(){
-  const nav=document.getElementById('nav');
-  const midMarket = new Set(['provenance','poisoning','compliance']);
-  let html = `<div class="nav-label">Workspace</div>`;
-  SECTIONS.forEach(([id,label],i)=>{
-    if(id==='provenance') html += `<div class="nav-label">Integrity &amp; supply</div>`;
-    html += `<button class="nav-item ${i===0?'active':''}" data-id="${id}">${label}</button>`;
-  });
-  nav.innerHTML = html;
-  nav.querySelectorAll('.nav-item').forEach(btn=>btn.onclick=()=>show(btn.dataset.id));
-}
-
-function show(id){
-  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active', b.dataset.id===id));
-  document.getElementById('viewTitle').textContent = SECTIONS.find(s=>s[0]===id)[1];
-}
-
-function openSystem(id){
-  const s=systems.find(x=>x.id===id); if(!s) return;
-  const recs=recommendations(s);
-  document.getElementById('modal').innerHTML = `
-    <div class="row" style="justify-content:space-between">
-      <h3>${s.name}</h3>
-      <button class="btn btn-ghost" onclick="closeModal()">Close</button>
-    </div>
-    <div class="stack" style="margin-top:8px">
-      ${kv('Purpose',s.purpose)}
-      ${kv('Owner',s.owner)}
-      ${kv('Risk level',badge(s.risk))}
-      ${kv('Data used',s.data.join(', '))}
-      ${kv('Affected users',s.users)}
-      ${kv('Review status',badge(s.review))}
-      ${kv('Compliance',badge(s.compliance))}
-      ${kv('Required approvals',s.approvals.join(' → '))}
-      ${kv('Audit history',s.audit.join(' · '))}
-      ${kv('Next review',s.nextReview)}
-      ${kv('Oversight',s.oversight)}
-      <h3 style="margin-top:10px">AI recommendations</h3>
-      ${recs.map(r=>`<div class="rec">${r}</div>`).join('')}
-    </div>`;
-  document.getElementById('modalBg').classList.add('open');
-}
-function closeModal(){document.getElementById('modalBg').classList.remove('open')}
-function kv(k,v){return `<div class="kv"><b>${k}</b><div>${v}</div></div>`}
-
-function recommendations(s){
-  const out=[];
-  if(s.biasScore<80) out.push('Bias: rebalance training cohorts; add counterfactual fairness tests on protected attributes before next release.');
-  else out.push('Bias: maintain quarterly disparate-impact checks; document accepted thresholds.');
-  if(s.risk==='High') out.push('Transparency: publish model card + decision rationale samples for auditors.');
-  out.push('Privacy: enforce purpose limitation on listed data fields; expire unused features after 90 days.');
-  if(!/always|required|confirm/i.test(s.oversight)) out.push('Human review: add mandatory dual-control for irreversible actions.');
-  else out.push('Human review: keep current oversight; log override reasons in audit trail.');
-  if(s.compliance!=='Compliant') out.push('Governance: complete missing approvals ('+s.approvals.join(', ')+') before production expansion.');
-  else out.push('Governance: schedule automated evidence pack export for '+s.nextReview+'.');
-  return out;
-}
-
-function genRecs(){
-  const high=systems.filter(s=>s.risk==='High'||s.compliance!=='Compliant');
-  if(high[0]) openSystem(high[0].id);
-  // Real AI (free, keyless). The systems listed here are the sample portfolio shown in this pilot.
-  if(window.AIHelper){
-    const brief=high.map(s=>`${s.name}: risk ${s.risk}, compliance ${s.compliance}, bias score ${s.biasScore}, oversight "${s.oversight}"`).join('; ');
-    AIHelper.open('These are the priority AI systems in my portfolio (sample data from this pilot): '+brief+'. Give 3-4 concrete, prioritised governance recommendations for each, then the single most urgent action overall.');
-  } else alert('Generated '+ (high.length*4) +' recommendations across '+high.length+' priority systems. Open a system profile to view them.');
-}
-
-function updateKnob(key, val){
-  knobs[key] = Number(val);
-  const el = document.getElementById('knob-'+key);
-  if(el) el.textContent = val + (key==='riskTolerance' || key==='nistAlignment' || key==='provenanceDepth' || key==='poisonSensitivity' ? '%' : '');
-  // Live-refresh dependent panels if visible
-  const hs = document.getElementById('healthScoreMetric');
-  if(hs){
-    const sc = healthScore();
-    hs.textContent = sc;
-    const hl = document.getElementById('healthScoreLabel');
-    if(hl) hl.innerHTML = badge(healthLabel(sc));
-    const hm = document.getElementById('healthScoreMeter');
-    if(hm) hm.innerHTML = meter(sc, sc>=80?'var(--ok)':sc>=65?'var(--warn)':'var(--bad)');
-  }
-  const nistEl = document.getElementById('nistOverall');
-  if(nistEl){
-    nistEl.textContent = knobs.nistAlignment + '%';
-    const nm = document.getElementById('nistOverallMeter');
-    if(nm) nm.innerHTML = meter(knobs.nistAlignment, knobs.nistAlignment>=80?'var(--ok)':'var(--warn)');
-  }
-  const depthNote = document.getElementById('provDepthNote');
-  if(depthNote) depthNote.textContent = knobs.provenanceDepth >= 80 ? 'Deep: direct + transitive + license AST' : knobs.provenanceDepth >= 50 ? 'Standard: direct + one-hop transitive' : 'Shallow: direct dependencies only';
-  const sensNote = document.getElementById('poisonSensNote');
-  if(sensNote) sensNote.textContent = knobs.poisonSensitivity >= 75 ? 'High sensitivity — more quarantine, more false positives' : knobs.poisonSensitivity >= 45 ? 'Balanced for mid-market ops' : 'Low sensitivity — fewer flags';
-}
-
-function sliderRow(key, label, value){
-  return `<div class="slider-block">
-    <div class="slider-head"><span>${label}</span><span class="val" id="knob-${key}">${value}%</span></div>
-    <input type="range" min="0" max="100" value="${value}" oninput="updateKnob('${key}', this.value)" />
-  </div>`;
-}
-
-function renderDashboard(){
-  const sc = healthScore();
-  document.getElementById('dashboard').innerHTML=`
-  <div class="card" style="margin-bottom:16px">
-    <div class="row" style="justify-content:space-between;margin-bottom:12px">
-      <div>
-        <h3>Active segment: overview · mathematical deviation bounds</h3>
-        <div class="sub">Preset: Credit Scoring LLM · Governance state Needs Audit · Mid-market corporate pilot</div>
-      </div>
-      <div class="row">
-        <select id="preset" class="pill" onchange="alert('Demo preset: '+this.value)">
-          <option>Credit Scoring LLM</option>
-          <option>Recruitment Agent</option>
-          <option>Risk Assessment Model</option>
-          <option>Custom Config</option>
-        </select>
-        ${badge('Needs Audit')}
-      </div>
-    </div>
-    <div class="grid g4">
-      <div class="card" style="background:var(--panel2)">
-        <h3>Health score</h3>
-        <div class="metric" id="healthScoreMetric">${sc}</div>
-        <div id="healthScoreLabel">${badge(healthLabel(sc))}</div>
-        <div id="healthScoreMeter">${meter(sc, sc>=80?'var(--ok)':sc>=65?'var(--warn)':'var(--bad)')}</div>
-        <div class="sub" style="margin-top:6px">Composite of fairness, drift, provenance, and checklist alignment</div>
-      </div>
-      <div class="card" style="background:var(--panel2)"><h3>Composite risk</h3><div class="metric">42.3%</div>${meter(42.3,'var(--warn)')}</div>
-      <div class="card" style="background:var(--panel2)"><h3>Fairness index</h3><div class="metric">82.0<span class="sub">/100</span></div>${meter(82,'var(--ok)')}</div>
-      <div class="card" style="background:var(--panel2)"><h3>Engine recommendation</h3><div class="rec" style="margin:0">Extreme data drift observed relative to baseline distribution. Recommendation: queue model re-training with recent dataset anchors — <b>requires human approval</b> before execution.</div></div>
-    </div>
-    <div class="grid g3" style="margin-top:12px">
-      <div><div class="sub">Demographic parity bias · 0.15</div>${meter(15,'var(--info)')}</div>
-      <div><div class="sub">Data drift shift rate · 0.58</div>${meter(58,'var(--warn)')}</div>
-      <div><div class="sub">Adversarial noise · 0.87</div>${meter(87,'var(--bad)')}</div>
-    </div>
-  </div>
-  <div class="grid g2" style="margin-bottom:16px">
-    <div class="card">
-      <h3>Pilot knobs (demo)</h3>
-      ${sliderRow('provenanceDepth','Provenance Scan Depth', knobs.provenanceDepth)}
-      ${sliderRow('poisonSensitivity','Dataset Poisoning Sensitivity', knobs.poisonSensitivity)}
-      ${sliderRow('nistAlignment','NIST Framework Alignment', knobs.nistAlignment)}
-      ${sliderRow('riskTolerance','Corporate Risk Tolerance Cap', knobs.riskTolerance)}
-      <p class="footer-note">Demo controls for mid-market pilot walkthroughs. They do not connect to live scanners or issue legal certifications.</p>
-    </div>
-    <div class="card">
-      <h3>NIST AI RMF — internal checklist</h3>
-      <div class="row" style="justify-content:space-between;margin-bottom:8px">
-        <div><div class="metric" id="nistOverall" style="font-size:22px">${knobs.nistAlignment}%</div><div class="sub">Corporate health (demo)</div></div>
-        ${badge('Internal only')}
-      </div>
-      <div id="nistOverallMeter">${meter(knobs.nistAlignment,'var(--warn)')}</div>
-      <div class="stack" style="margin-top:12px">
-        ${nistChecks.map(([fn,desc,st,pct])=>`
-          <div class="check-row">
-            <div class="check-label"><b>${fn}</b><span class="sub">${desc}</span></div>
-            <div class="row">${badge(st)} <span class="sub">${pct}%</span></div>
-          </div>`).join('')}
-      </div>
-      <p class="footer-note">Alignment to NIST AI RMF functions (Govern / Map / Measure / Manage) as an <b>internal checklist</b> — not a legal certification, accreditation, or federal endorsement.</p>
-    </div>
-  </div>
-  <div class="grid g4" style="margin-bottom:16px">
-    <div class="card"><h3>Registered systems</h3><div class="metric">${systems.length}</div><div class="sub">Across lines of business</div></div>
-    <div class="card"><h3>High risk</h3><div class="metric">${systems.filter(s=>s.risk==='High').length}</div><div class="sub">Need ethics + compliance</div></div>
-    <div class="card"><h3>Open incidents</h3><div class="metric">${incidents.filter(i=>i[2]!=='Closed').length}</div><div class="sub">Active governance queues</div></div>
-    <div class="card"><h3>Policies active</h3><div class="metric">${policies.filter(p=>p[2]==='Active').length}</div><div class="sub">Library coverage</div></div>
-  </div>
-  <div class="grid g2">
-    <div class="card">
-      <div class="row" style="justify-content:space-between;margin-bottom:8px"><h3>Priority approvals</h3>${badge('Workflow')}</div>
-      <table><thead><tr><th>System</th><th>Risk</th><th>Next</th><th>Status</th></tr></thead>
-      <tbody>${systems.map(s=>`<tr onclick="openSystem('${s.id}')"><td>${s.name}</td><td>${badge(s.risk)}</td><td>${s.nextReview}</td><td>${badge(s.review)}</td></tr>`).join('')}</tbody></table>
-    </div>
-    <div class="card">
-      <h3>Compliance health (demo)</h3>
-      <div class="chart">
-        <div class="bar" style="height:70%"><span>Bias</span></div>
-        <div class="bar" style="height:82%"><span>Privacy</span></div>
-        <div class="bar" style="height:64%"><span>Oversight</span></div>
-        <div class="bar" style="height:76%"><span>Docs</span></div>
-        <div class="bar" style="height:58%"><span>Incidents</span></div>
-      </div>
-      <p class="footer-note">Example data for walkthrough — not live org metrics.</p>
-    </div>
-  </div>`;
-}
-
-function renderRegistry(){
-  document.getElementById('registry').innerHTML=`
-  <div class="card">
-    <div class="row" style="justify-content:space-between;margin-bottom:12px">
-      <h3>AI System Registry</h3>
-      <button class="btn btn-primary" onclick="alert('Demo: new system intake form would open here.')">Register system</button>
-    </div>
-    <table>
-      <thead><tr><th>System</th><th>Purpose</th><th>Owner</th><th>Risk</th><th>Review</th><th>Compliance</th><th>Next review</th></tr></thead>
-      <tbody>${systems.map(s=>`<tr onclick="openSystem('${s.id}')">
-        <td><b>${s.name}</b></td><td class="muted">${s.purpose}</td><td>${s.owner}</td>
-        <td>${badge(s.risk)}</td><td>${badge(s.review)}</td><td>${badge(s.compliance)}</td><td>${s.nextReview}</td>
-      </tr>`).join('')}</tbody>
-    </table>
-  </div>`;
-}
-
-function renderBias(){
-  document.getElementById('bias').innerHTML=`
-  <div class="grid g2">${systems.map(s=>`
-    <div class="card">
-      <div class="row" style="justify-content:space-between"><h3>${s.name}</h3>${badge(s.biasScore>=85?'Pass':s.biasScore>=75?'Watch':'Fail')}</div>
-      <div class="metric">${s.biasScore}</div>
-      <div class="sub">Fairness score (demo)</div>
-      ${meter(s.biasScore, s.biasScore>=85?'var(--ok)':s.biasScore>=75?'var(--warn)':'var(--bad)')}
-      <div class="rec" style="margin-top:12px">${recommendations(s)[0]}</div>
-    </div>`).join('')}</div>`;
-}
-
-function renderPrivacy(){
-  document.getElementById('privacy').innerHTML=`
-  <div class="grid g2">${systems.map(s=>`
-    <div class="card">
-      <div class="row" style="justify-content:space-between"><h3>${s.name}</h3>${badge('Privacy '+s.privacyScore)}</div>
-      <p class="sub">Data: ${s.data.join(', ')}</p>
-      ${meter(s.privacyScore,'var(--info)')}
-      <div class="rec" style="margin-top:12px">${recommendations(s)[2]}</div>
-    </div>`).join('')}</div>`;
-}
-
-function renderPolicies(){
-  document.getElementById('policies').innerHTML=`
-  <div class="card">
-    <div class="row" style="justify-content:space-between;margin-bottom:10px"><h3>Policy library</h3><button class="btn btn-ghost" onclick="alert('Demo: upload policy PDF')">Upload</button></div>
-    <table><thead><tr><th>ID</th><th>Policy</th><th>Status</th><th>Audience</th></tr></thead>
-    <tbody>${policies.map(p=>`<tr><td>${p[0]}</td><td>${p[1]}</td><td>${badge(p[2])}</td><td class="muted">${p[3]}</td></tr>`).join('')}</tbody></table>
-  </div>`;
-}
-
-function renderCompliance(){
-  document.getElementById('compliance').innerHTML=`
-  <div class="grid g2" style="margin-bottom:16px">
-    <div class="card">
-      <h3>NIST AI RMF checklist (internal)</h3>
-      <div class="row" style="justify-content:space-between;margin-bottom:10px">
-        <div>
-          <div class="metric" style="font-size:24px">${knobs.nistAlignment}%</div>
-          <div class="sub">Corporate checklist health · demo</div>
-        </div>
-        ${badge('Not a certification')}
-      </div>
-      ${meter(knobs.nistAlignment,'var(--warn)')}
-      <div class="stack" style="margin-top:14px">
-        ${nistChecks.map(([fn,desc,st,pct])=>`
-          <div class="check-row">
-            <div class="check-label"><b>${fn}</b><span class="sub">${desc}</span></div>
-            <div class="row">${badge(st)} <span class="sub">${pct}%</span></div>
-          </div>`).join('')}
-      </div>
-      <p class="footer-note">Maps to NIST AI Risk Management Framework functions for mid-market self-assessment. This is an <b>internal alignment checklist</b>, not legal certification, DOJ authority, or federal approval.</p>
-    </div>
-    <div class="card">
-      <h3>Compliance reports</h3>
-      <table><thead><tr><th>System</th><th>Status</th><th>Evidence</th></tr></thead>
-      <tbody>${systems.map(s=>`<tr onclick="openSystem('${s.id}')"><td>${s.name}</td><td>${badge(s.compliance)}</td><td class="muted">${s.audit.slice(-1)[0]}</td></tr>`).join('')}</tbody></table>
-      <h3 style="margin-top:18px">Export packs</h3>
-      <div class="stack">
-        <button class="btn btn-ghost" onclick="alert('Demo: EU AI Act evidence pack')">EU AI Act summary</button>
-        <button class="btn btn-ghost" onclick="alert('Demo: SOC2 AI control mapping')">SOC 2 AI controls</button>
-        <button class="btn btn-ghost" onclick="alert('Demo: NIST AI RMF checklist PDF')">NIST AI RMF checklist PDF</button>
-        <button class="btn btn-ghost" onclick="alert('Demo: board PDF')">Board quarterly PDF</button>
-      </div>
-      <p class="footer-note">Exports are simulated in this demo build.</p>
-    </div>
-  </div>`;
-}
-
-function renderDrift(){
-  document.getElementById('drift').innerHTML=`
-  <div class="grid g3" style="margin-bottom:16px">
-    <div class="card"><h3>PSI / drift index</h3><div class="metric">0.58</div>${meter(58,'var(--warn)')}<div class="sub">Shift vs training baseline</div></div>
-    <div class="card"><h3>Feature stability</h3><div class="metric">71%</div>${meter(71,'var(--info)')}<div class="sub">Top-20 features holding</div></div>
-    <div class="card"><h3>Alert state</h3><div class="metric" style="font-size:18px">${badge('Needs Audit')}</div><div class="sub">Breach of soft bound 0.45</div></div>
-  </div>
-  <div class="card"><h3>Drift timeline (demo)</h3>
-    <table><thead><tr><th>Window</th><th>Drift</th><th>Action</th></tr></thead>
-    <tbody>
-      <tr><td>Last 7d</td><td>0.41</td><td class="muted">Watch</td></tr>
-      <tr><td>Last 30d</td><td>0.58</td><td>${badge('Retrain review')}</td></tr>
-      <tr><td>Last 90d</td><td>0.33</td><td class="muted">Stable</td></tr>
-    </tbody></table>
-    <p class="footer-note">Retrain proposals stay human-gated — EthosGuard queues recommendations; operators approve execution.</p>
-  </div>`;
-}
-
-function renderXai(){
-  document.getElementById('xai').innerHTML=`
-  <div class="card">
-    <h3>XAI matrix — explanation coverage</h3>
-    <table><thead><tr><th>System</th><th>Global</th><th>Local</th><th>Counterfactual</th><th>Status</th></tr></thead>
-    <tbody>${systems.map(s=>`<tr onclick="openSystem('${s.id}')">
-      <td>${s.name}</td>
-      <td>${badge(s.risk==='Low'?'Ready':'Partial')}</td>
-      <td>${badge('Ready')}</td>
-      <td>${badge(s.risk==='High'?'Missing':'Partial')}</td>
-      <td>${badge(s.review)}</td>
-    </tr>`).join('')}</tbody></table>
-    <p class="footer-note">Matrix tracks whether auditors can get global, local, and counterfactual explanations per model.</p>
-  </div>`;
-}
-
-function renderAudit(){
-  document.getElementById('audit').innerHTML=`
-  <div class="card">
-    <h3>Audit trails</h3>
-    <table><thead><tr><th>When</th><th>System</th><th>Event</th><th>Actor</th></tr></thead>
-    <tbody>
-      ${systems.flatMap(s=>s.audit.map(a=>`<tr><td class="muted">${a.split(' ')[0]||'2026-09'}</td><td>${s.name}</td><td>${a}</td><td>${s.owner.split('·')[0].trim()}</td></tr>`)).join('')}
-      <tr><td>2026-09-09</td><td>CreditScore Assist</td><td>Drift alert 0.58 raised</td><td>EthosGuard Engine</td></tr>
-      <tr><td>2026-09-09</td><td>CreditScore Assist</td><td>Provenance scan: 2 copyleft flags</td><td>EthosGuard Engine</td></tr>
-      <tr><td>2026-09-08</td><td>FraudPulse Monitor</td><td>Poisoning shield quarantined batch B-17</td><td>EthosGuard Engine</td></tr>
-    </tbody></table>
-  </div>`;
-}
-
-function renderSafety(){
-  document.getElementById('safety').innerHTML=`
-  <div class="grid g2">
-    <div class="card">
-      <h3>Safety bounds</h3>
-      <div class="kv"><b>Max auto actions</b><div>None for High risk — human gate required</div></div>
-      <div class="kv"><b>Drift hard stop</b><div>0.70 (block promotions)</div></div>
-      <div class="kv"><b>Parity soft bound</b><div>0.20 demographic parity gap</div></div>
-      <div class="kv"><b>Adversarial noise</b><div>0.87 observed · investigate</div></div>
-      <div class="kv"><b>Risk tolerance cap</b><div>Corporate knob · demo ${knobs.riskTolerance}%</div></div>
-    </div>
-    <div class="card">
-      <h3>Bound breaches</h3>
-      <div class="rec">Adversarial noise 0.87 exceeds watch threshold 0.60 — freeze model promotion until red-team note filed.</div>
-      <div class="rec" style="margin-top:8px">Drift 0.58 exceeds soft bound 0.45 — queue retrain proposal for human approval.</div>
-    </div>
-  </div>`;
-}
-
-function renderProvenance(){
-  const audited = packages.filter(p=>p[4]==='Audited').length;
-  const copyleft = packages.filter(p=>/copyleft/i.test(p[4])).length;
-  const transitive = packages.filter(p=>p[3]==='Transitive').length;
-  document.getElementById('provenance').innerHTML=`
-  <div class="grid g4" style="margin-bottom:16px">
-    <div class="card"><h3>Packages scanned</h3><div class="metric">${packages.length}</div><div class="sub">OS / model dependency tree</div></div>
-    <div class="card"><h3>Packages audited</h3><div class="metric">${audited}</div><div class="sub">License + source reviewed</div></div>
-    <div class="card"><h3>GPL / copyleft flags</h3><div class="metric">${copyleft}</div><div class="sub">Needs legal review before ship</div></div>
-    <div class="card"><h3>Transitive deps</h3><div class="metric">${transitive}</div><div class="sub">Indirect supply-chain nodes</div></div>
-  </div>
-  <div class="grid g2" style="margin-bottom:16px">
-    <div class="card">
-      <h3>Provenance Scan Depth</h3>
-      ${sliderRow('provenanceDepth','Scan depth', knobs.provenanceDepth)}
-      <p class="sub" id="provDepthNote">${knobs.provenanceDepth >= 80 ? 'Deep: direct + transitive + license AST' : knobs.provenanceDepth >= 50 ? 'Standard: direct + one-hop transitive' : 'Shallow: direct dependencies only'}</p>
-      <p class="footer-note">Demo knob for mid-market pilots. Depth changes how many hops the (simulated) scanner walks — not a live SBOM feed.</p>
-    </div>
-    <div class="card">
-      <h3>Scan summary</h3>
-      <div class="kv"><b>Target</b><div>CreditScore Assist · train image</div></div>
-      <div class="kv"><b>Last scan</b><div>2026-09-09 01:12 ET</div></div>
-      <div class="kv"><b>Direct deps</b><div>${packages.filter(p=>p[3]==='Direct').length} packages</div></div>
-      <div class="kv"><b>Copyleft policy</b><div>Flag GPL/LGPL for counsel review</div></div>
-      <div class="rec" style="margin-top:12px">Two copyleft packages flagged (<code>gpl-utils-demo</code>, <code>lgpl-codec</code>). Recommend isolating or replacing before production promotion.</div>
-    </div>
-  </div>
-  <div class="card">
-    <h3>Dependency inventory</h3>
-    <table>
-      <thead><tr><th>Package</th><th>Version</th><th>License</th><th>Depth</th><th>Status</th></tr></thead>
-      <tbody>${packages.map(p=>`<tr>
-        <td><b>${p[0]}</b></td><td class="muted">${p[1]}</td><td>${/GPL|LGPL/.test(p[2])?'<span class="flag-tag bad">'+p[2]+'</span>':p[2]}</td>
-        <td>${p[3]}</td><td>${badge(p[4])}</td>
-      </tr>`).join('')}</tbody>
-    </table>
-    <p class="footer-note">Honest mid-market provenance view: OS dependency scan, audited packages, GPL/copyleft flags, and transitive deps — no fake federal authority claims.</p>
-  </div>`;
-}
-
-function renderPoisoning(){
-  const quarantined = poisonFlags.filter(f=>/quarantin/i.test(f[1])).length;
-  document.getElementById('poisoning').innerHTML=`
-  <div class="grid g4" style="margin-bottom:16px">
-    <div class="card"><h3>Anomalies quarantined</h3><div class="metric">${quarantined}</div><div class="sub">Held out of training / scoring</div></div>
-    <div class="card"><h3>Poisoning vectors</h3><div class="metric">${poisonFlags.length}</div><div class="sub">Active watch list</div></div>
-    <div class="card"><h3>Data drift safeguard</h3><div class="metric" style="font-size:18px">${badge('Linked')}</div><div class="sub">Tied to Drift Telemetry PSI 0.58</div></div>
-    <div class="card"><h3>Shield state</h3><div class="metric" style="font-size:18px">${badge('Active')}</div><div class="sub">Human review before release</div></div>
-  </div>
-  <div class="grid g2" style="margin-bottom:16px">
-    <div class="card">
-      <h3>Dataset Poisoning Sensitivity</h3>
-      ${sliderRow('poisonSensitivity','Sensitivity', knobs.poisonSensitivity)}
-      <p class="sub" id="poisonSensNote">${knobs.poisonSensitivity >= 75 ? 'High sensitivity — more quarantine, more false positives' : knobs.poisonSensitivity >= 45 ? 'Balanced for mid-market ops' : 'Low sensitivity — fewer flags'}</p>
-      <p class="footer-note">Demo control for pilot walkthroughs. Raises/lowers how aggressively the shield quarantines suspect batches — illustrative only.</p>
-    </div>
-    <div class="card">
-      <h3>Shield coverage</h3>
-      <div class="kv"><b>Token-injection</b><div><span class="flag-tag bad">Flagged</span> Prompt / instruction tokens in tabular batches</div></div>
-      <div class="kv"><b>Coordinate poisoning</b><div><span class="flag-tag">Watch</span> Feature-space density attacks near boundaries</div></div>
-      <div class="kv"><b>Label flip</b><div><span class="flag-tag bad">Quarantined</span> Inverted targets vs peer cohort</div></div>
-      <div class="kv"><b>Drift safeguard</b><div><span class="flag-tag ok">Active</span> Cross-check with Drift Telemetry</div></div>
-    </div>
-  </div>
-  <div class="card">
-    <h3>Poisoning / integrity flags</h3>
-    <table>
-      <thead><tr><th>Vector</th><th>Status</th><th>Severity</th><th>Notes</th></tr></thead>
-      <tbody>${poisonFlags.map(f=>`<tr>
-        <td><b>${f[0]}</b></td><td>${badge(f[1])}</td><td>${badge(f[2])}</td><td class="muted">${f[3]}</td>
-      </tr>`).join('')}</tbody>
-    </table>
-    <p class="footer-note">Dataset Integrity / Poisoning Shield for mid-market teams: quarantine anomalies, surface poisoning vectors, and keep drift safeguards honest — no law-enforcement or sovereign framing.</p>
-  </div>`;
-}
-
-navRender();
-renderDashboard(); renderBias(); renderDrift(); renderPolicies(); renderXai();
-renderAudit(); renderPrivacy(); renderSafety(); renderCompliance();
-renderProvenance(); renderPoisoning(); renderRegistry();
-</script>
 <script>if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
 <script src="ai-helper.js"></script>
 <script>AIHelper.init({"referrer": "ethosguard", "title": "🛡️ AI risk check", "color": "#4f7cff", "greeting": "Describe an AI system you use or plan to build (what it decides, what data it uses, who it affects) and I'll give a quick risk check: bias, privacy, safety, and which rules (NIST AI RMF, EU AI Act, Colorado AI Act) may apply.", "system": "You are EthosGuard's responsible-AI reviewer. For the AI system the user describes, give a short structured risk check: 1) Risk level (low/limited/high) with reason, 2) Top risks (bias, privacy, safety, transparency), 3) Which frameworks likely apply (NIST AI RMF, EU AI Act risk tier, ISO/IEC 42001, US state laws like the Colorado AI Act) and why, 4) Five concrete next steps. Ask one clarifying question if the description is too vague. Be practical and concise.", "note": "Guidance only, not legal advice.", "chips": [["Check a hiring AI", "We use an AI tool that ranks job applicants' resumes and rejects the bottom 50%. Give me a risk check."], ["Check a support chatbot", "We added an AI chatbot to answer customer support questions on our website. Give me a risk check."], ["Check my AI system", "I want a risk check on an AI system. Ask me what you need to know."]]});</script>
+<script src="app.js"></script>
 </body>
 </html>
