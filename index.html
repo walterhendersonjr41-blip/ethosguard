@@ -75,6 +75,7 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer}
 .flag-tag.bad{background:rgba(239,68,68,.15);color:#fca5a5;border-color:rgba(239,68,68,.35)}
 .flag-tag.ok{background:rgba(34,197,94,.15);color:#86efac;border-color:rgba(34,197,94,.35)}
 </style>
+<link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#4f7cff"><link rel="apple-touch-icon" href="icons/icon-192.png"><link rel="icon" href="icons/icon-192.png">
 </head>
 <body>
 <aside>
@@ -92,7 +93,7 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer}
     <h2 id="viewTitle">Overview</h2>
     <div class="header-right">
       <span class="pill">Org: Henderson Concepts</span>
-      <span class="pill">Demo · mid-market pilot</span>
+      <span class="pill">Sample data · mid-market pilot</span>
       <button class="btn btn-primary" onclick="genRecs()">Generate AI recommendations</button>
     </div>
   </header>
@@ -334,8 +335,12 @@ function recommendations(s){
 
 function genRecs(){
   const high=systems.filter(s=>s.risk==='High'||s.compliance!=='Compliant');
-  alert('Generated '+ (high.length*4) +' recommendations across '+high.length+' priority systems. Open a system profile to view them.');
   if(high[0]) openSystem(high[0].id);
+  // Real AI (free, keyless). The systems listed here are the sample portfolio shown in this pilot.
+  if(window.AIHelper){
+    const brief=high.map(s=>`${s.name}: risk ${s.risk}, compliance ${s.compliance}, bias score ${s.biasScore}, oversight "${s.oversight}"`).join('; ');
+    AIHelper.open('These are the priority AI systems in my portfolio (sample data from this pilot): '+brief+'. Give 3-4 concrete, prioritised governance recommendations for each, then the single most urgent action overall.');
+  } else alert('Generated '+ (high.length*4) +' recommendations across '+high.length+' priority systems. Open a system profile to view them.');
 }
 
 function updateKnob(key, val){
@@ -695,5 +700,8 @@ renderDashboard(); renderBias(); renderDrift(); renderPolicies(); renderXai();
 renderAudit(); renderPrivacy(); renderSafety(); renderCompliance();
 renderProvenance(); renderPoisoning(); renderRegistry();
 </script>
+<script>if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
+<script src="ai-helper.js"></script>
+<script>AIHelper.init({"referrer": "ethosguard", "title": "🛡️ AI risk check", "color": "#4f7cff", "greeting": "Describe an AI system you use or plan to build (what it decides, what data it uses, who it affects) and I'll give a quick risk check: bias, privacy, safety, and which rules (NIST AI RMF, EU AI Act, Colorado AI Act) may apply.", "system": "You are EthosGuard's responsible-AI reviewer. For the AI system the user describes, give a short structured risk check: 1) Risk level (low/limited/high) with reason, 2) Top risks (bias, privacy, safety, transparency), 3) Which frameworks likely apply (NIST AI RMF, EU AI Act risk tier, ISO/IEC 42001, US state laws like the Colorado AI Act) and why, 4) Five concrete next steps. Ask one clarifying question if the description is too vague. Be practical and concise.", "note": "Guidance only, not legal advice.", "chips": [["Check a hiring AI", "We use an AI tool that ranks job applicants' resumes and rejects the bottom 50%. Give me a risk check."], ["Check a support chatbot", "We added an AI chatbot to answer customer support questions on our website. Give me a risk check."], ["Check my AI system", "I want a risk check on an AI system. Ask me what you need to know."]]});</script>
 </body>
 </html>
